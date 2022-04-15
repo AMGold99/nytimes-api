@@ -1,0 +1,80 @@
+---
+title: "NYTimes API"
+author: "Asa Gold"
+date: "4/12/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r libraries, echo=FALSE}
+library(httr)
+library(tidyverse)
+library(jsonlite)
+```
+
+
+## Helpful Filter Query Fields
+- subject
+- subject.contains
+- type_of_material
+
+
+```{r compose-query}
+
+api_key <- 'cNOhrFXwqw8Yiowb7S8YRAxh0gSNyVXu'
+article_url <- 'https://api.nytimes.com/svc/search/v2/articlesearch.json?'
+
+page <- "0"
+
+begin_date <- '20210101'
+end_date <- stringr::str_remove_all(Sys.Date(),"-")
+
+# query <- "Demonstrations,%20Protests%20and%20Riots"
+
+type_of_material <- "News"
+
+
+subject.contains <- URLencode("\"Protests\" AND \"Education\" OR \"Movement\"")
+
+
+
+url <- paste0(
+  article_url,
+  'begin_date=',
+  begin_date,
+  '&end_date=',
+  end_date,
+  "&page=",
+  page,
+  "&fq=",
+  "type_of_material%3A(%22",type_of_material,"%22)",
+  "%20AND%20",
+  "subject.contains%3A(",subject.contains,")",
+  "&api-key=",
+  api_key)
+
+url
+
+```
+
+
+
+```{r api-call}
+response <- httr::GET(url)
+
+parsed_list <- fromJSON(
+  rawToChar(
+    response$content
+  )
+)
+
+article_data <- parsed_list$response$docs
+
+View(article_data)
+```
+
+
