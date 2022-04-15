@@ -74,7 +74,7 @@ parsed_list <- fromJSON(
 
 article_data <- parsed_list$response$docs
 
-View(article_data)
+head(article_data)
 ```
 
 
